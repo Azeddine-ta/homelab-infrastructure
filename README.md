@@ -93,7 +93,6 @@ The dedicated hypervisor (`192.168.100.66`) hosts isolated virtual machines and 
 
 ## 💡 Practical Skills Demonstrated
 
-This homelab serves as the living workbench for my preparation toward the **German IHK Vocational Examination (*Fachinformatiker für Systemintegration*)**:
 * **Lernfeld 3 & 9:** Subnet routing, VLAN isolation, DNS sinkholes (AdGuard), Tailscale mesh VPN, TCP/IP diagnostics (`ss`, `dig`, `traceroute`, `ip`).
 * **Lernfeld 4 & 7:** LUKS disk encryption, UFW firewall rule orchestration, LVM and Btrfs snapshot management.
 * **Lernfeld 8 & 11:** Type-1 hypervisor operations (Proxmox VE), LXC container lifecycle, Docker Compose microservices orchestration, automated ZSTD snapshot backups.
