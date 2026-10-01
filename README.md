@@ -1,102 +1,126 @@
-# 🛡️ Enterprise-Grade Multi-Tier Homelab & Edge Routing Infrastructure
+# 🛡️ Dual-Zone Homelab & Enterprise Edge Routing Infrastructure (v2)
 
 [![Hypervisor](https://img.shields.io/badge/Hypervisor-Proxmox%20VE%209.2-E57000?logo=proxmox&logoColor=white)](https://proxmox.com)
-[![Workstation OS](https://img.shields.io/badge/Workstation-CachyOS%20(Arch)--Linux-blue?logo=archlinux&logoColor=white)](https://cachyos.org)
-[![Router](https://img.shields.io/badge/Edge%20Router-OpenWrt%20(Raspberry%20Pi)-00D7D7?logo=openwrt&logoColor=white)](https://openwrt.org)
-[![Security](https://img.shields.io/badge/Security-LUKS%20%7C%20UFW%20%7C%20AdGuard-brightgreen)](#)
-[![Mesh VPN](https://img.shields.io/badge/Mesh%20VPN-Tailscale-1E293B?logo=tailscale&logoColor=white)](https://tailscale.com)
+[![Workstation](https://img.shields.io/badge/Workstation-CachyOS%20(Arch)--Linux-blue?logo=archlinux&logoColor=white)](https://cachyos.org)
+[![Router](https://img.shields.io/badge/Edge%20Router-OpenWrt%20(Raspberry%20Pi%204B)-00D7D7?logo=openwrt&logoColor=white)](https://openwrt.org)
+[![Gateway](https://img.shields.io/badge/GPON%20Gateway-Huawei%20HG8145X6--10-red)](#)
+[![Access Point](https://img.shields.io/badge/AP-TP--Link%20Archer%20C6%20v2.80-008080)](#)
+[![Security](https://img.shields.io/badge/Security-LUKS2%20%7C%20UFW%20%7C%20AdGuard-brightgreen)](#)
+[![Mesh VPN](https://img.shields.io/badge/Mesh%20VPN-Tailscale%20(WireGuard)-1E293B?logo=tailscale&logoColor=white)](https://tailscale.com)
 
-Welcome to the documentation of my self-hosted homelab, edge routing, and virtualization environment. This repository details the physical architecture, subnets, firewall rules, and zero-trust mesh topologies I designed and maintain for continuous hands-on learning in **IT Systems Integration (Fachinformatiker für Systemintegration - FISI)**.
+Welcome to the documentation of my production homelab, enterprise dual-zone routing, and virtualization environment. This repository details the physical architecture, subnets, firewall rules, and zero-trust mesh topologies I designed and maintain for continuous hands-on learning in **IT Systems Integration (Fachinformatiker für Systemintegration - FISI)**.
 
 ---
 
 ## 🗺️ High-Level Network Topology
 
 ```
-                                [ WAN / Internet ]
-                                         │
-                         ┌───────────────┴───────────────┐
-                         │   ISP Main Router / Gateway   │
-                         │        192.168.100.1          │
-                         └───────────────┬───────────────┘
-                                         │
-        ┌────────────────────────────────┼────────────────────────────────┐
-        ▼                                ▼                                ▼
-┌──────────────────────┐     ┌──────────────────────┐        ┌──────────────────────┐
-│  Edge Router / DNS   │     │ Hypervisor Server    │        │ Personal Workstation │
-│  Raspberry Pi 4      │     │ Proxmox VE 9.2       │        │ SafeHouse (CachyOS)  │
-│  (OpenWrt)           │     │ Core i7 / 31 GB RAM  │        │ Ryzen 7 / 30 GB RAM  │
-│  192.168.100.2 (WAN) │     │ 192.168.100.66       │        │ 192.168.100.95       │
-│  10.0.0.1 (LAN)      │     └──────────┬───────────┘        └──────────┬───────────┘
-│  • AdGuard Home DNS  │                │                               │
-│  • Tailscale Gateway │                ▼                               ▼
-└──────────┬───────────┘      [ Guests & Workloads ]         [ Host Security & Disks ]
-           │                  • CT 100: Pi-hole / DNS        • LUKS Encrypted NVMe
-           ▼                  • CT 101: Tailscale Node       • UFW Strict Firewall
-  ┌──────────────────┐        • VM 100: ParrotOS (KVM)       • Btrfs Snapper Backups
-  │ Dummy Wi-Fi AP   │        • VM 200: Debian 12 Docker     • Docker Engine
-  │ (DHCP Subnet)    │
-  └────────┬─────────┘
-           │
- ┌─────────┴─────────┐
- ▼                   ▼
-[ Mobile Clients ]  [ Laptop / End Users ]
-(Phones / Tablets)  (MacBook Air M3: 192.168.100.5)
+                                  [ WAN / Optical Fiber ]
+                                             │
+                        ┌────────────────────┴────────────────────┐
+                        │       Main Router + Wi-Fi 6 AP          │
+                        │       Huawei HG8145X6-10 Gateway        │
+                        │          192.168.100.1 / DHCP           │
+                        └────────────────────┬────────────────────┘
+                                             │
+               ┌─────────────────────────────┼─────────────────────────────┐
+               │ 1 Gb/s Copper               │ 1 Gb/s Copper               │ Wi-Fi 6 (802.11ax)
+               ▼                             ▼                             ▼
+    ┌──────────────────────┐      ┌──────────────────────┐      ┌──────────────────────┐
+    │  Personal Workstation│      │  Virtualization Node │      │  Mobile Workstation  │
+    │  SafeHouse (CachyOS) │      │  homelab (Proxmox VE)│      │  MacBook Air (M3)    │
+    │  192.168.100.95/24   │      │  192.168.100.66/24   │      │  192.168.100.5/24    │
+    │  • eno1: 1 Gb/s full │      │  • vmbr0 Linux bridge│      │  • en0: Ch 48/80 MHz │
+    │  • LUKS2 + Btrfs     │      │  • TCP/22 SSH open   │      │  • WPA2 / 5 GHz      │
+    │  • UFW: 631/53317 open│     │  • PVE firewall / nft│      └──────────┬───────────┘
+    └──────────┬───────────┘      └──────────────────────┘                 │
+               │                                                           │
+               │                      1 Gb/s Eth0 Uplink                   │
+               └──────────────────────────────┬────────────────────────────┘
+                                              ▼
+                             ┌─────────────────────────────────┐
+                             │  Raspberry Pi 4B (OpenWrt)      │
+                             │  WAN: 192.168.100.2 (eth0)      │
+                             │  LAN: 10.0.0.1 (br-lan/eth1)    │
+                             │  • Linux 6.12.74 aarch64 (3.9G) │
+                             │  • AdGuard Home DNS (:53)       │
+                             │  • OpenWrt firewall4 (nftables) │
+                             │  • Tailscale Gateway node       │
+                             └────────────────┬────────────────┘
+                                              │
+                                              │ 1 Gb/s Eth1 Trunk
+                                              ▼
+                             ┌─────────────────────────────────┐
+                             │  Archer C6 v2.80 (Dummy AP)     │
+                             │  10.0.0.3 / Layer-2 Bridge      │
+                             │  f0:09:0d:6f:9b:14              │
+                             └────────────────┬────────────────┘
+                                              │
+                                              │ Wi-Fi Bridge
+                                              ▼
+                             ┌─────────────────────────────────┐
+                             │  Isolated Client Zone (LAN-B)   │
+                             │  Pool: 10.0.0.0/24              │
+                             │  • Mobile Clients               │
+                             │  • Users & Guest Devices        │
+                             └─────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════════════════════
+   🔐 OVERLAY NETWORK: Tailscale Mesh (100.64.0.0/10 WireGuard / UDP 41641)
+   • SafeHouse:        100.***.***.*** (ONLINE, fd7a:115c:a1e0::a032:eb6b)
+   • OpenWrt Gateway:  100.***.***.*** (ONLINE, TCP/1995 management port)
+   • MacBook Air M3:   100.***.***.*** (Configured client node)
+═══════════════════════════════════════════════════════════════════════════════════════════════
 ```
 
 ---
 
-## 🏛️ Node Inventory & Architecture Specifications
+## 🏛️ Node Inventory & Hardware Specifications
 
-| Node / Host | IP Address | Operating System | Hardware / Role | Security & Storage Features |
+| Node / Hostname | IP / Subnet | OS / Firmware | Hardware / Role | Security & Storage Features |
 | :--- | :--- | :--- | :--- | :--- |
-| **Main Gateway** | `192.168.100.1` | Embedded Linux | ISP Optical/VDSL Router | NAT, WAN Edge, Port Filtering |
-| **OpenWrt Router** | `192.168.100.2` (WAN)<br>`10.0.0.1` (LAN) | OpenWrt Linux | **Raspberry Pi** Edge Router & Gateway | **AdGuard Home** DNS sinkhole, WireGuard/Tailscale |
-| **Proxmox Node** | `192.168.100.66` | Proxmox VE 9.2 (Debian 13) | Intel Core i7-1165G7 · 31 GB RAM | LVM-thin storage, automated ZSTD snapshot backups |
-| **SafeHouse** | `192.168.100.95` | CachyOS (Arch-based) | AMD Ryzen 7 7700X · 30 GB RAM · RX 6800 | **LUKS** full-disk encryption, **UFW**, Btrfs subvols |
-| **Mobile Client** | `192.168.100.5` | macOS (Darwin 25) | MacBook Air (13-inch, Apple M3, 16 GB) | APFS encrypted, remote SSH management station |
-| **Dummy AP** | Dynamic / Auto | Access Point Firmware | Dedicated Wireless Access Point | Segregated wireless access for IoT and mobile users |
+| **Main Gateway** | `192.168.100.1/24` | Huawei VOS | **Huawei HG8145X6-10** (GPON ONT + Wi-Fi 6 AP) | Fiber WAN Termination, DHCP Server, Primary NAT |
+| **SafeHouse** | `192.168.100.95/24` | **CachyOS** (Linux 7.2.2 Arch) | **AMD Ryzen 7 7700X** · 30 GB RAM · RX 6800 XT | **LUKS2** Full-Disk Encryption, **Btrfs** root/home subvols, **UFW** active (default deny-in, ports 631/53317/52345 open) |
+| **homelab** | `192.168.100.66/24` | **Proxmox VE 9.2.20** (Debian 13) | **Intel Core i7-1165G7** · 31 GB RAM · 256GB NVMe | **vmbr0** bridge, PVE firewall (nftables, ICMP filtered), TCP/22 SSH key authentication, LVM-thin |
+| **OpenWrt Edge** | `192.168.100.2` (WAN)<br>`10.0.0.1` (LAN) | **OpenWrt** (Linux 6.12.74 aarch64) | **Raspberry Pi 4B** (4 GB RAM, dual NIC: eth0 + eth1) | **AdGuard Home** (:53 DNS sinkhole), **firewall4** (nftables), `br-lan = bridge{eth1, phy0-ap0}`, Tailscale gateway |
+| **Archer C6** | `10.0.0.3/24` | TP-Link Vendor FW | **Archer C6 v2.80** (Operating in Access Point Bridge mode) | MAC `f0:09:0d:6f:9b:14`, broadcasts isolated client Wi-Fi for `10.0.0.0/24` |
+| **MacBook Air** | `192.168.100.5/24` | **macOS** (Darwin 25 arm64) | **Apple M3 (2024)** · 16 GB Unified Memory | Connected via `en0` (802.11ax, 5 GHz, Ch 48 / 80 MHz, WPA2), Tailscale client |
 
 ---
 
-## 🛡️ Security Layers & Implementation Details
+## 🛡️ Network Architecture & Security Highlights
 
-### 1. Dual-Tier Network Segmentation
-* The **192.168.100.0/24** subnet acts as the core administrative and hypervisor backbone connecting `SafeHouse`, the `Proxmox` virtualization node, and the OpenWrt router's WAN uplink.
-* The **10.0.0.0/24** isolated subnet is managed directly by the **Raspberry Pi running OpenWrt**, providing dedicated DHCP assignment, traffic isolation, and Wi-Fi client isolation via the secondary access point.
+### 1. Dual-Zone Network Segmentation (LAN-A & LAN-B)
+* **LAN-A (`192.168.100.0/24`): High-Trust Infrastructure Backbone**
+  * Connects the Huawei GPON gateway, the **CachyOS workstation (SafeHouse)**, the **Proxmox VE hypervisor**, the **MacBook Air M3**, and the WAN interface (`eth0`) of the Raspberry Pi.
+  * Direct 1 Gb/s full-duplex copper Ethernet links ensure minimum latency and maximum bandwidth for hypervisor management and local storage replication.
+* **LAN-B (`10.0.0.0/24`): Isolated Client & User Zone**
+  * Handled completely by the **Raspberry Pi 4B running OpenWrt**.
+  * The physical `eth1` port trunks downstream to the **TP-Link Archer C6 v2.80**, which acts as a dedicated Layer-2 access point bridge.
+  * Mobile phones, guest tablets, and IoT devices are physically segregated from hypervisor management interfaces.
 
-### 2. Network-Wide DNS Sinkholing & Ad-Blocking
-* **AdGuard Home** is deployed on the OpenWrt Raspberry Pi to enforce network-wide tracking prevention, malware domain blocking, and custom split-horizon DNS routing (`.home` and `.lan` records).
-* Internal services (e.g. `pve.home`, `safehouse.home`) resolve locally without querying external public resolvers.
+### 2. Network-Wide DNS Sinkholing (AdGuard Home)
+* AdGuard Home runs directly on the OpenWrt Raspberry Pi (`:53`), serving as the upstream authoritative resolver for LAN-B and internal DNS overrides.
+* Provides network-wide telemetry blocking, tracking protection, and custom split-horizon DNS routing (`.home` / `.lan` domain resolution) without client-side software.
 
-### 3. Zero-Trust Remote Mesh (Tailscale)
-* All primary endpoints (`SafeHouse`, `Proxmox`, `MacBook Air`, and mobile devices) are enrolled in a private **Tailscale** overlay network.
-* Allows end-to-end encrypted WireGuard tunneling back into the home LAN without opening public ports on the ISP router or exposing services to WAN attacks.
+### 3. Layered Host Defense (UFW & PVE Firewall)
+* **SafeHouse Workstation:** Hardened with **UFW** enforcing an incoming default DENY policy. Only strictly whitelisted ports (CUPS 631, internal P2P ports) are reachable.
+* **Proxmox VE Node:** Protected by Proxmox's native **pve-firewall (nftables)** engine. ICMP ping is filtered, and administrative access is restricted to authenticated Ed25519 SSH keys and encrypted HTTPS WebUI (:8006).
 
-### 4. Host Defense: UFW & Storage Encryption
-* **Host Firewalls:** `SafeHouse` runs an active **UFW (Uncomplicated Firewall)** configuration enforcing the principle of least privilege (inbound default DENY, explicit whitelisting for SSH port 22 and internal Docker reverse proxies).
-* **Storage Encryption (LUKS):** Critical workstation NVMe drives (Samsung 990 PRO and Kingston NVMe) utilize **LUKS (Linux Unified Key Setup)** volume encryption to protect sensitive data at rest.
-
----
-
-## 🛠️ Virtualization & Workloads (Proxmox VE 9.2)
-
-The dedicated hypervisor (`192.168.100.66`) hosts isolated virtual machines and lightweight Linux containers (LXC):
-
-* **VM 100 — ParrotOS (KVM):** Dedicated security testing and penetration-testing environment, isolated on its own virtual NIC.
-* **VM 200 — Debian 12 Docker Host:**
-  * **Uptime Kuma:** Continuous ping and HTTP health monitoring of all infrastructure nodes and edge gateways.
-  * **IT-Tools:** Local suite of developer and network administrator utilities.
-  * **Homepage:** Consolidated operational dashboard displaying real-time metrics, node uptime, and direct service shortcuts.
+### 4. Zero-Trust Overlay Mesh (Tailscale WireGuard)
+* Enrolled nodes operate on the `100.64.0.0/10` CGNAT range over encrypted WireGuard (UDP 41641).
+* Allows seamless, end-to-end encrypted remote management from mobile devices outside the local LAN without port forwarding or exposing internal IP addresses to the public internet.
 
 ---
 
-## 💡 Practical Skills Demonstrated
+## 💡 Alignment with German IHK Curriculum (FISI Lernfelder)
 
-* **Lernfeld 3 & 9:** Subnet routing, VLAN isolation, DNS sinkholes (AdGuard), Tailscale mesh VPN, TCP/IP diagnostics (`ss`, `dig`, `traceroute`, `ip`).
-* **Lernfeld 4 & 7:** LUKS disk encryption, UFW firewall rule orchestration, LVM and Btrfs snapshot management.
-* **Lernfeld 8 & 11:** Type-1 hypervisor operations (Proxmox VE), LXC container lifecycle, Docker Compose microservices orchestration, automated ZSTD snapshot backups.
+This infrastructure serves as my practical workbench for the **German Vocational Examination (*Fachinformatiker für Systemintegration*)**:
+* **Lernfeld 3 (Netzwerke und Dienste bereitstellen):** Multi-tier subnet routing (`192.168.100.0/24` vs `10.0.0.0/24`), bridge configuration (`vmbr0`, `br-lan`), Wi-Fi 6 802.11ax channel planning (Ch 48 / 80 MHz), DHCP server allocation.
+* **Lernfeld 4 (Schutzbedarfsanalyse & Cyber-Sicherheit):** **LUKS2** volume encryption, **UFW** host firewall policies, **nftables / firewall4**, AdGuard Home DNS sinkholing.
+* **Lernfeld 7 (Cyber-physische Systeme & Storage):** Hardware assembly (Ryzen 7 7700X, Intel Core i7, Raspberry Pi 4B ARM), Btrfs filesystem subvolumes, LVM-thin storage architecture.
+* **Lernfeld 8 & 11 (Serverdienste & Vernetzte Systeme):** Proxmox VE 9.2 Type-1 hypervisor administration, Linux bridge virtual switching, zero-trust **Tailscale (WireGuard)** mesh routing.
 
 ---
 
-*Authored and maintained by Azeddine Taleb Ahmed · Last updated: September 2026*
+*Authored and maintained by Azeddine Taleb Ahmed · Last updated: October 2026*
