@@ -126,4 +126,4 @@ Willkommen in der Dokumentation meines produktiv genutzten Homelabs, meines Heim
 
 ---
 
-*Verfasst und gepflegt von Azeddine Taleb Ahmed · Zuletzt aktualisiert: Oktober 2026*
+*Verfasst und gepflegt von Azeddine TA · Zuletzt aktualisiert: Oktober 2026*
