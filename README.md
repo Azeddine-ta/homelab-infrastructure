@@ -115,11 +115,7 @@ Welcome to the documentation of my production homelab, enterprise dual-zone rout
 
 ## 💡 Alignment with German IHK Curriculum (FISI Lernfelder)
 
-This infrastructure serves as my practical workbench for the **German Vocational Examination (*Fachinformatiker für Systemintegration*)**:
-* **Lernfeld 3 (Netzwerke und Dienste bereitstellen):** Multi-tier subnet routing (`192.168.100.0/24` vs `10.0.0.0/24`), bridge configuration (`vmbr0`, `br-lan`), Wi-Fi 6 802.11ax channel planning (Ch 48 / 80 MHz), DHCP server allocation.
-* **Lernfeld 4 (Schutzbedarfsanalyse & Cyber-Sicherheit):** **LUKS2** volume encryption, **UFW** host firewall policies, **nftables / firewall4**, AdGuard Home DNS sinkholing.
-* **Lernfeld 7 (Cyber-physische Systeme & Storage):** Hardware assembly (Ryzen 7 7700X, Intel Core i7, Raspberry Pi 4B ARM), Btrfs filesystem subvolumes, LVM-thin storage architecture.
-* **Lernfeld 8 & 11 (Serverdienste & Vernetzte Systeme):** Proxmox VE 9.2 Type-1 hypervisor administration, Linux bridge virtual switching, zero-trust **Tailscale (WireGuard)** mesh routing.
+
 
 ---
 
