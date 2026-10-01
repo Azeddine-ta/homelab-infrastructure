@@ -1,4 +1,4 @@
-# 🛡️ Dual-Zone Homelab & Home Routing Infrastructure (v2)
+# 🛡️ Dual-Zone Homelab & Home Routing Infrastructure 
 
 [![Hypervisor](https://img.shields.io/badge/Hypervisor-Proxmox%20VE%209.2-E57000?logo=proxmox&logoColor=white)](https://proxmox.com)
 [![Workstation](https://img.shields.io/badge/Workstation-CachyOS%20(Arch)--Linux-blue?logo=archlinux&logoColor=white)](https://cachyos.org)
