@@ -1,4 +1,4 @@
-# 🛡️ Dual-Zone Homelab & Enterprise Edge Routing Infrastructure (v2)
+# 🛡️ Dual-Zone Homelab & Home Routing Infrastructure (v2)
 
 [![Hypervisor](https://img.shields.io/badge/Hypervisor-Proxmox%20VE%209.2-E57000?logo=proxmox&logoColor=white)](https://proxmox.com)
 [![Workstation](https://img.shields.io/badge/Workstation-CachyOS%20(Arch)--Linux-blue?logo=archlinux&logoColor=white)](https://cachyos.org)
@@ -8,11 +8,11 @@
 [![Security](https://img.shields.io/badge/Security-LUKS2%20%7C%20UFW%20%7C%20AdGuard-brightgreen)](#)
 [![Mesh VPN](https://img.shields.io/badge/Mesh%20VPN-Tailscale%20(WireGuard)-1E293B?logo=tailscale&logoColor=white)](https://tailscale.com)
 
-Welcome to the documentation of my production homelab, enterprise dual-zone routing, and virtualization environment. This repository details the physical architecture, subnets, firewall rules, and zero-trust mesh topologies I designed and maintain for continuous hands-on learning in **IT Systems Integration (Fachinformatiker für Systemintegration - FISI)**.
+Welcome to the documentation of my production homelab, Home dual-zone routing, and virtualization environment. This repository details the physical architecture, subnets, firewall rules, and zero-trust mesh topologies I designed and maintain for continuous hands-on learning in **IT Systems Administration**.
 
 ---
 
-## 🗺️ High-Level Network Topology
+## 🗺️ Network Topology
 
 ```
                                   [ WAN / Optical Fiber ]
