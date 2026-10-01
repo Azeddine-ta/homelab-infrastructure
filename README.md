@@ -11,7 +11,7 @@
 
 
 <p align="center">
-  <img src="assets/v2-homelab.webp" alt="Dual-Zone Homelab & Enterprise Edge Routing Topology" width="100%">
+  <img src="homelab-Diagram.jpg" alt="Dual-Zone Homelab & Enterprise Edge Routing Topology" width="100%">
 </p>
 
 
