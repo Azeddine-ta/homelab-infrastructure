@@ -49,7 +49,7 @@ Willkommen in der Dokumentation meines produktiv genutzten Homelabs, meines Heim
                             │  Raspberry Pi 4B (OpenWrt)      │
                             │  WAN: 192.168.100.2 (eth0)      │
                             │  LAN: 10.0.0.1 (br-lan/eth1)    │
-                            │  • Linux 6.12.74 aarch64 (3.9G) │
+                            │  • Linux 6.12.x aarch64  │
                             │  • AdGuard Home DNS (:53)       │
                             │  • OpenWrt firewall4 (nftables) │
                             │  • Tailscale-Gateway-Knoten     │
@@ -58,9 +58,9 @@ Willkommen in der Dokumentation meines produktiv genutzten Homelabs, meines Heim
                                              │ 1 Gb/s Eth1-Trunk
                                              ▼
                             ┌─────────────────────────────────┐
-                            │  Archer C6 v2.80 (Dummy-AP)     │
+                            │  Archer C6 v2.xx (Dummy-AP)     │
                             │  10.0.0.3 / Layer-2-Bridge      │
-                            │  f0:09:0d:6f:9b:14              │
+                            │  f0:09:0d:xx:xx:xx              │
                             └────────────────┬────────────────┘
                                              │
                                              │ WLAN-Bridge
@@ -74,8 +74,8 @@ Willkommen in der Dokumentation meines produktiv genutzten Homelabs, meines Heim
 
 ═══════════════════════════════════════════════════════════════════════════════════════
    🔐 OVERLAY-NETZWERK: Tailscale-Mesh (100.64.0.0/10 WireGuard / UDP 41641)
-   • SafeHouse:        100.***.***.*** (ONLINE, fd7a:115c:a1e0::a032:eb6b)
-   • OpenWrt-Gateway:  100.***.***.*** (ONLINE, TCP/1995 Verwaltungsport)
+   • SafeHouse:        100.***.***.*** (ONLINE, fd7a:115c:a1e0::****)
+   • OpenWrt-Gateway:  100.***.***.*** (ONLINE, TCP/xxxx Verwaltungsport)
    • MacBook Air M3:   100.***.***.*** (konfigurierter Client-Knoten)
 ═══════════════════════════════════════════════════════════════════════════════════════
 ```
@@ -87,11 +87,11 @@ Willkommen in der Dokumentation meines produktiv genutzten Homelabs, meines Heim
 | Knoten / Hostname | IP / Subnetz | Betriebssystem / Firmware | Hardware / Rolle | Sicherheit & Speicher |
 | :--- | :--- | :--- | :--- | :--- |
 | **Haupt-Gateway** | `192.168.100.1/24` | Huawei VOS | **Huawei HG8145X6-10** (GPON-ONT + Wi-Fi-6-AP) | Glasfaser-Abschluss (WAN), DHCP-Server, primäres NAT |
-| **SafeHouse** | `192.168.100.95/24` | **CachyOS** (Linux 7.2.2, Arch) | **AMD Ryzen 7 7700X** · 30 GB RAM · RX 6800 XT | **LUKS2**-Festplattenverschlüsselung (Full-Disk), **Btrfs**-Subvolumes für root/home, **UFW** aktiv (eingehend standardmäßig gesperrt, Ports 631/53317/52345 offen) |
-| **homelab** | `192.168.100.66/24` | **Proxmox VE 9.2.20** (Debian 13) | **Intel Core i7-1165G7** · 31 GB RAM · 256 GB NVMe | **vmbr0**-Bridge, PVE-Firewall (nftables, ICMP gefiltert), TCP/22 SSH mit Schlüssel-Authentifizierung, LVM-thin |
-| **OpenWrt Edge** | `192.168.100.2` (WAN)<br>`10.0.0.1` (LAN) | **OpenWrt** (Linux 6.12.74 aarch64) | **Raspberry Pi 4B** (4 GB RAM, zwei Netzwerkkarten: eth0 + eth1) | **AdGuard Home** (:53, DNS-Sinkhole), **firewall4** (nftables), `br-lan = bridge{eth1, phy0-ap0}`, Tailscale-Gateway |
-| **Archer C6** | `10.0.0.3/24` | TP-Link Hersteller-Firmware | **Archer C6 v2.80** (im Access-Point-Bridge-Modus) | MAC `f0:09:0d:6f:9b:14`, sendet das isolierte Client-WLAN für `10.0.0.0/24` |
-| **MacBook Air** | `192.168.100.5/24` | **macOS** (Darwin 25 arm64) | **Apple M3 (2024)** · 16 GB Unified Memory | Verbunden über `en0` (802.11ax, 5 GHz, Kanal 48 / 80 MHz, WPA2), Tailscale-Client |
+| **SafeHouse** | `192.168.100.95/24` | **CachyOS** (Linux 7.x.x, Arch) | **AMD Ryzen 7 7700X** · 30 GB RAM · RX 6800 XT | **LUKS2**-Festplattenverschlüsselung (Full-Disk), **Btrfs**-Subvolumes für root/home, **UFW** aktiv (eingehend standardmäßig gesperrt, Ports 631/53317/52345 offen) |
+| **homelab** | `192.168.100.66/24` | **Proxmox VE 9.x.xx** (Debian 13) | **Intel Core i7-1165G7** · 31 GB RAM · 256 GB NVMe | **vmbr0**-Bridge, PVE-Firewall (nftables, ICMP gefiltert), TCP/22 SSH mit Schlüssel-Authentifizierung, LVM-thin |
+| **OpenWrt Edge** | `192.168.100.2` (WAN)<br>`10.0.0.1` (LAN) | **OpenWrt** (Linux 6.xx.xx aarch64) | **Raspberry Pi 4B** (4 GB RAM, zwei Netzwerkkarten: eth0 + eth1) | **AdGuard Home** (:53, DNS-Sinkhole), **firewall4** (nftables), `br-lan = bridge{eth1, phy0-ap0}`, Tailscale-Gateway |
+| **Archer C6** | `10.0.0.3/24` | TP-Link Hersteller-Firmware | **Archer C6 v2.xx** (im Access-Point-Bridge-Modus) | MAC `f0:09:0d:xx:xx:xx`, sendet das isolierte Client-WLAN für `10.0.0.0/24` |
+| **MacBook Air** | `192.168.100.5/24` | **macOS**  | **Apple M(x)** · 16 GB Unified Memory | Verbunden über `en0` (802.11ax, 5 GHz, Kanal 48 / 80 MHz, WPA2), Tailscale-Client |
 
 ---
 
@@ -103,7 +103,7 @@ Willkommen in der Dokumentation meines produktiv genutzten Homelabs, meines Heim
   * Direkte Kupferverbindungen mit 1 Gb/s im Vollduplex-Betrieb sorgen für geringe Latenz und hohe Bandbreite bei der Hypervisor-Verwaltung und der lokalen Speicherreplikation.
 * **LAN-B (`10.0.0.0/24`): Isoliertes Netz für Clients und Benutzer**
   * Wird komplett vom **Raspberry Pi 4B mit OpenWrt** verwaltet.
-  * Der physische Port `eth1` führt per Kabel zum **TP-Link Archer C6 v2.80**. Dieser arbeitet als reiner Layer-2-Access-Point (Bridge).
+  * Der physische Port `eth1` führt per Kabel zum **TP-Link Archer C6 v2.xx**. Dieser arbeitet als reiner Layer-2-Access-Point (Bridge).
   * Smartphones, Gast-Tablets und IoT-Geräte sind physisch von den Verwaltungsschnittstellen des Hypervisors getrennt.
 
 ### 2. DNS-Sinkhole für das ganze Netz (AdGuard Home)
